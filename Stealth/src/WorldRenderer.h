@@ -1,0 +1,52 @@
+#pragma once
+
+//
+// Copyright (C) 2019 Pharap (@Pharap)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+#include <stdint.h>
+#include <stddef.h>
+#include <Arduboy2.h>
+
+#include "World.h"
+
+struct WorldRenderer
+{
+	template<uint8_t tileWidth = 8, uint8_t tileHeight = tileWidth>
+	static void render(Arduboy2 & arduboy, const World & world)
+	{
+		const uint8_t screenWidth = (arduboy.width() / tileWidth);
+		const uint8_t screenHeight = (arduboy.height() / tileHeight);
+
+		const uint8_t worldWidth = world.getWidth();
+		const uint8_t worldHeight = world.getHeight();
+
+		const uint8_t maxX = min(screenWidth, worldWidth);
+		const uint8_t maxY = min(screenHeight, worldHeight);
+
+		for(uint8_t y = 0; y < maxY; ++y)
+		{
+			const int16_t drawY = (y * tileHeight);
+
+			for(uint8_t x = 0; x < maxX; ++x)
+			{
+				const int16_t drawX = (x * tileWidth);
+
+				if(world.isSolid(x, y))
+					arduboy.drawRect(drawX, drawY, tileWidth, tileHeight);
+			}
+		}
+	}
+};
